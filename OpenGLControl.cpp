@@ -25,6 +25,9 @@ void OpenGLControl::oglCreate(CRect rect, CWnd *parent)
 
 OpenGLControl::~OpenGLControl()
 {
+	wglMakeCurrent(NULL, NULL);
+	wglDeleteContext(hrc);
+	::ReleaseDC(*hWnd, hdc);
 }
 BEGIN_MESSAGE_MAP(OpenGLControl, CWnd)
 	ON_WM_PAINT()
