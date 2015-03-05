@@ -1,7 +1,7 @@
 #pragma once
 #include "afxwin.h"
-#include <gl\GL.h>
-#include <gl\GLU.h>
+#include <GLEW\glew.h>
+#include <glut.h>
 
 #define SIZE_RESIZE 5
 
@@ -20,6 +20,9 @@ public:
 	float _fPosY;
 	bool _isMaximized;
 
+	float space;
+	float step;
+
 public:
 	OpenGLControl();
 	virtual ~OpenGLControl();
@@ -27,6 +30,8 @@ public:
 	void oglCreate(CRect rect, CWnd *parent);
 	void oglInitialize(void);
 	void oglDrawCube(void);
+	void oglDrawSphere(void);
+	void LightShine(void);
 
 private:
 	CWnd *hWnd;

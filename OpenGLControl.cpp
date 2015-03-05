@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "OpenGLControl.h"
 
 OpenGLControl::OpenGLControl()
@@ -9,6 +9,9 @@ OpenGLControl::OpenGLControl()
 	_fRotX = 0.0f;
 	_fRotY = 0.0f;
 	_isMaximized = false;
+
+	space = 0.0f;
+	step = 0.0f;
 }
 
 //set up basic window variables and function calls
@@ -122,8 +125,10 @@ void OpenGLControl::OnTimer(UINT_PTR nIDEvent)
 			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 			//Draw a cube
-			oglDrawCube();
-		
+			//oglDrawCube();
+			
+			oglDrawSphere();
+
 			//Swap buffer
 			SwapBuffers(hdc);
 
@@ -197,6 +202,40 @@ void OpenGLControl::OnSize(UINT nType, int cx, int cy)
 }
 
 
+void OpenGLControl::LightShine(void)
+{
+
+	GLfloat mat_diffuse[4] = { 1, 0.5, 0.5, 1.0 };
+	GLfloat mat_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_shininess[1] = { 100.0 };
+	//light source 1
+	GLfloat light_position0[4] = { 0, 500, 500, 0 };
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+	glEnable(GL_LIGHT0);
+	//light source 2   
+	GLfloat light_position1[4] = { 1000, -1000, 1000, 0 };
+	GLfloat mat_diffuse1[4] = { 0.5, 0.5, 1.0, 1.0 };
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, mat_diffuse1);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, mat_specular);
+	glLightfv(GL_LIGHT1, GL_SHININESS, mat_shininess);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+	glEnable(GL_LIGHT1);
+
+	//enable the model to receive light source
+	glEnable(GL_LIGHTING);
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_DEPTH_TEST);
+	//calculate the normal
+	glEnable(GL_AUTO_NORMAL);
+	glEnable(GL_NORMALIZE);
+
+}
+
+
 void OpenGLControl::oglDrawCube(void)
 {
 	// Wireframe Mode
@@ -243,6 +282,28 @@ void OpenGLControl::oglDrawCube(void)
 	glVertex3f(-1.0f, 1.0f, -1.0f);
 	glEnd();
 }
+
+
+void OpenGLControl::oglDrawSphere(void)
+{
+	space += 0.005f;
+	if (space > 1.0f)
+		space = 0.1f;
+	step = step + 1.0f;
+	if (step > 360.0f)
+		step = step - 360.0f;
+	glPushMatrix();
+	glScalef(space, space, space);
+	glRotatef(step, 0.0f, 1.0f, 0.0f);
+	glRotatef(step, 0.0f, 0.0f, 1.0f);
+	glRotatef(step, 1.0f, 0.0f, 0.0f);
+
+	LightShine();
+	glutSolidSphere(1.0, 20, 16);
+	glPopMatrix();
+	glFlush();
+}
+
 
 void OpenGLControl::OnMouseMove(UINT nFlags, CPoint point)
 {
